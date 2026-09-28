@@ -1,0 +1,281 @@
+{
+    "blockly": false,
+    "blockly_xml": "<xml></xml>",
+    "category": "Uncategorized",
+    "coa": {
+        "data": {
+            "description": "",
+            "edges": [
+                {
+                    "id": "port_3_to_port_5",
+                    "sourceNode": "3",
+                    "sourcePort": "3_out",
+                    "targetNode": "5",
+                    "targetPort": "5_in"
+                },
+                {
+                    "id": "port_5_to_port_1",
+                    "sourceNode": "5",
+                    "sourcePort": "5_out",
+                    "targetNode": "1",
+                    "targetPort": "1_in"
+                },
+                {
+                    "id": "port_0_to_port_6",
+                    "sourceNode": "0",
+                    "sourcePort": "0_out",
+                    "targetNode": "6",
+                    "targetPort": "6_in"
+                },
+                {
+                    "conditions": [
+                        {
+                            "conditionKey": "condition_key_0",
+                            "index": 0
+                        }
+                    ],
+                    "id": "port_6_to_port_3",
+                    "sourceNode": "6",
+                    "sourcePort": "6_out",
+                    "targetNode": "3",
+                    "targetPort": "3_in"
+                },
+                {
+                    "id": "port_7_to_port_1",
+                    "sourceNode": "7",
+                    "sourcePort": "7_out",
+                    "targetNode": "1",
+                    "targetPort": "1_in"
+                },
+                {
+                    "id": "port_0_to_port_7",
+                    "sourceNode": "0",
+                    "sourcePort": "0_out",
+                    "targetNode": "7",
+                    "targetPort": "7_in"
+                }
+            ],
+            "hash": "e01586b79d092e1d840f1159be1973da16c5359d",
+            "nodes": {
+                "0": {
+                    "data": {
+                        "advanced": {
+                            "join": []
+                        },
+                        "functionName": "on_start",
+                        "id": "0",
+                        "type": "start"
+                    },
+                    "errors": {},
+                    "id": "0",
+                    "type": "start",
+                    "warnings": {},
+                    "x": 1030,
+                    "y": 199.99999999999983
+                },
+                "1": {
+                    "data": {
+                        "advanced": {
+                            "join": []
+                        },
+                        "functionId": 1,
+                        "functionName": "on_finish",
+                        "id": "1",
+                        "type": "end"
+                    },
+                    "errors": {},
+                    "id": "1",
+                    "type": "end",
+                    "userCode": "\n    # This function is called after all actions are completed.\n    # summary of all the action and/or all details of actions\n    # can be collected here.\n\n    # summary_json = phantom.get_summary()\n    # if 'result' in summary_json:\n        # for action_result in summary_json['result']:\n            # if 'action_run_id' in action_result:\n                # action_results = phantom.get_action_results(action_run_id=action_result['action_run_id'], result_data=False, flatten=False)\n                # phantom.debug(action_results)\n\n",
+                    "warnings": {},
+                    "x": 1090,
+                    "y": 824
+                },
+                "3": {
+                    "data": {
+                        "action": "ip reputation",
+                        "actionType": "investigate",
+                        "advanced": {
+                            "join": []
+                        },
+                        "connector": "Cisco Talos Intelligence",
+                        "connectorConfigs": [
+                            "talos-intelligence"
+                        ],
+                        "connectorId": "7c653487-22c8-4ec1-bca0-16a8b1513c86",
+                        "connectorVersion": "v1",
+                        "functionId": 1,
+                        "functionName": "ip_reputation_1",
+                        "id": "3",
+                        "loop": {
+                            "conditions": [
+                                {
+                                    "comparisons": [
+                                        {
+                                            "comparisonKey": "comparison_key_0",
+                                            "op": "==",
+                                            "param": "",
+                                            "value": ""
+                                        }
+                                    ],
+                                    "conditionIndex": 0,
+                                    "conditionKey": "condition_key_0",
+                                    "logic": "and",
+                                    "type": "if"
+                                }
+                            ],
+                            "enabled": false,
+                            "exitAfterUnit": "m",
+                            "exitAfterValue": 10,
+                            "exitConditionEnabled": false,
+                            "exitLoopAfter": 2,
+                            "pauseUnit": "m",
+                            "pauseValue": 2
+                        },
+                        "parameters": {
+                            "ip": "artifact:*.cef.destinationAddress"
+                        },
+                        "requiredParameters": [
+                            {
+                                "data_type": "string",
+                                "default": "",
+                                "field": "ip"
+                            }
+                        ],
+                        "tab": "byConnector",
+                        "type": "action"
+                    },
+                    "errors": {},
+                    "id": "3",
+                    "type": "action",
+                    "warnings": {},
+                    "x": 900,
+                    "y": 528
+                },
+                "5": {
+                    "aiMetadata": {
+                        "addedByAI": true,
+                        "description": "calculate_score_v2"
+                    },
+                    "data": {
+                        "advanced": {
+                            "customName": "calculate_score_v2",
+                            "customNameId": 0
+                        },
+                        "functionId": 1,
+                        "functionName": "calculate_score_v2",
+                        "id": "5",
+                        "inputParameters": [
+                            "ip_reputation_1:action_result.data.*.Threat_Level",
+                            "ip_reputation_1:action_result.data.*.Threat_Categories",
+                            "ip_reputation_1:action_result.status",
+                            "artifact:*.cef.destinationAddress"
+                        ],
+                        "outputVariables": [
+                            "high_risk",
+                            "risk_score",
+                            "risk_summary",
+                            "ioc_used",
+                            "ioc_type"
+                        ],
+                        "type": "code",
+                        "userCode": "\n    risk_score_value = 0\n    high_risk_value = False\n    risk_summary_value = \"No reputation data returned.\"\n\n    destination_values = container_artifact_cef_item_0 if isinstance(container_artifact_cef_item_0, list) else [container_artifact_cef_item_0]\n    status_values = ip_reputation_1_result_item_2 if isinstance(ip_reputation_1_result_item_2, list) else [ip_reputation_1_result_item_2]\n    level_values = ip_reputation_1_result_item_0 if isinstance(ip_reputation_1_result_item_0, list) else [ip_reputation_1_result_item_0]\n    categories_values = ip_reputation_1_result_item_1 if isinstance(ip_reputation_1_result_item_1, list) else [ip_reputation_1_result_item_1]\n\n    ioc_value = \"\"\n    for value in destination_values:\n        if value in (None, \"\"):\n            continue\n        ioc_value = str(value).strip()\n        if ioc_value:\n            break\n\n    normalized_categories = []\n    for value in categories_values:\n        if value in (None, \"\"):\n            continue\n        normalized_value = str(value).strip()\n        if normalized_value:\n            normalized_categories.append(normalized_value)\n\n    for value in level_values:\n        if value in (None, \"\"):\n            continue\n        normalized_value = str(value).strip().lower()\n        if normalized_value.isdigit():\n            numeric_value = int(normalized_value)\n            if numeric_value > risk_score_value:\n                risk_score_value = numeric_value\n        else:\n            severity_map = {\n                \"very low\": 10,\n                \"low\": 25,\n                \"medium\": 50,\n                \"high\": 75,\n                \"very high\": 90,\n                \"critical\": 95\n            }\n            mapped_value = severity_map.get(normalized_value)\n            if mapped_value is not None and mapped_value > risk_score_value:\n                risk_score_value = mapped_value\n\n    high_risk_categories = [\"malware\", \"botnet\", \"phishing\", \"c2\", \"command and control\", \"spam\", \"blacklist\"]\n    for value in normalized_categories:\n        normalized_value = value.lower()\n        if any(category in normalized_value for category in high_risk_categories):\n            high_risk_value = True\n            break\n\n    if risk_score_value >= 70:\n        high_risk_value = True\n\n    status_failed = any(str(value).strip().lower() == \"failed\" for value in status_values if value not in (None, \"\"))\n    if status_failed:\n        high_risk_value = False\n        risk_score_value = 0\n        risk_summary_value = \"IP reputation lookup failed. Returning normalized safe default score.\"\n    elif normalized_categories or risk_score_value > 0:\n        category_text = \", \".join(normalized_categories) if normalized_categories else \"none\"\n        risk_summary_value = \"IP reputation evaluated for {0}. Score={1}. Categories={2}.\".format(ioc_value or \"destination IP\", risk_score_value, category_text)\n    else:\n        risk_summary_value = \"IP reputation completed for {0} with no threat indicators returned.\".format(ioc_value or \"destination IP\")\n\n    calculate_score_v2__high_risk = high_risk_value\n    calculate_score_v2__risk_score = risk_score_value\n    calculate_score_v2__risk_summary = risk_summary_value\n    calculate_score_v2__ioc_used = ioc_value\n    calculate_score_v2__ioc_type = \"ip\"\n"
+                    },
+                    "errors": {},
+                    "id": "5",
+                    "type": "code",
+                    "userCode": "\n    risk_score_value = 0\n    high_risk_value = False\n    risk_summary_value = \"No reputation data returned.\"\n\n    destination_values = container_artifact_cef_item_0 if isinstance(container_artifact_cef_item_0, list) else [container_artifact_cef_item_0]\n    status_values = ip_reputation_1_result_item_2 if isinstance(ip_reputation_1_result_item_2, list) else [ip_reputation_1_result_item_2]\n    level_values = ip_reputation_1_result_item_0 if isinstance(ip_reputation_1_result_item_0, list) else [ip_reputation_1_result_item_0]\n    categories_values = ip_reputation_1_result_item_1 if isinstance(ip_reputation_1_result_item_1, list) else [ip_reputation_1_result_item_1]\n\n    ioc_value = \"\"\n    for value in destination_values:\n        if value in (None, \"\"):\n            continue\n        ioc_value = str(value).strip()\n        if ioc_value:\n            break\n\n    normalized_categories = []\n    for value in categories_values:\n        if value in (None, \"\"):\n            continue\n        normalized_value = str(value).strip()\n        if normalized_value:\n            normalized_categories.append(normalized_value)\n\n    for value in level_values:\n        if value in (None, \"\"):\n            continue\n        normalized_value = str(value).strip().lower()\n        if normalized_value.isdigit():\n            numeric_value = int(normalized_value)\n            if numeric_value > risk_score_value:\n                risk_score_value = numeric_value\n        else:\n            severity_map = {\n                \"very low\": 10,\n                \"low\": 25,\n                \"medium\": 50,\n                \"high\": 75,\n                \"very high\": 90,\n                \"critical\": 95\n            }\n            mapped_value = severity_map.get(normalized_value)\n            if mapped_value is not None and mapped_value > risk_score_value:\n                risk_score_value = mapped_value\n\n    high_risk_categories = [\"malware\", \"botnet\", \"phishing\", \"c2\", \"command and control\", \"spam\", \"blacklist\"]\n    for value in normalized_categories:\n        normalized_value = value.lower()\n        if any(category in normalized_value for category in high_risk_categories):\n            high_risk_value = True\n            break\n\n    if risk_score_value >= 70:\n        high_risk_value = True\n\n    status_failed = any(str(value).strip().lower() == \"failed\" for value in status_values if value not in (None, \"\"))\n    if status_failed:\n        high_risk_value = False\n        risk_score_value = 0\n        risk_summary_value = \"IP reputation lookup failed. Returning normalized safe default score.\"\n    elif normalized_categories or risk_score_value > 0:\n        category_text = \", \".join(normalized_categories) if normalized_categories else \"none\"\n        risk_summary_value = \"IP reputation evaluated for {0}. Score={1}. Categories={2}.\".format(ioc_value or \"destination IP\", risk_score_value, category_text)\n    else:\n        risk_summary_value = \"IP reputation completed for {0} with no threat indicators returned.\".format(ioc_value or \"destination IP\")\n\n    calculate_score_v2__high_risk = high_risk_value\n    calculate_score_v2__risk_score = risk_score_value\n    calculate_score_v2__risk_summary = risk_summary_value\n    calculate_score_v2__ioc_used = ioc_value\n    calculate_score_v2__ioc_type = \"ip\"\n",
+                    "warnings": {},
+                    "x": 900,
+                    "y": 676
+                },
+                "6": {
+                    "aiMetadata": {
+                        "addedByAI": true,
+                        "description": "destination_address_present"
+                    },
+                    "data": {
+                        "advanced": {
+                            "customName": "destination_address_present",
+                            "customNameId": 0
+                        },
+                        "conditions": [
+                            {
+                                "comparisons": [
+                                    {
+                                        "conditionIndex": 0,
+                                        "op": "is not empty",
+                                        "param": "artifact:*.cef.destinationAddress",
+                                        "value": ""
+                                    }
+                                ],
+                                "conditionIndex": 0,
+                                "conditionKey": "condition_key_0",
+                                "customName": "Destination address present",
+                                "logic": "and"
+                            }
+                        ],
+                        "functionId": 1,
+                        "functionName": "destination_address_present",
+                        "id": "6",
+                        "type": "filter"
+                    },
+                    "errors": {},
+                    "id": "6",
+                    "type": "filter",
+                    "warnings": {},
+                    "x": 1070,
+                    "y": 348
+                },
+                "7": {
+                    "aiMetadata": {
+                        "addedByAI": true,
+                        "description": "safe_default_outputs"
+                    },
+                    "data": {
+                        "advanced": {
+                            "customName": "safe_default_outputs",
+                            "customNameId": 0
+                        },
+                        "functionId": 2,
+                        "functionName": "safe_default_outputs",
+                        "id": "7",
+                        "inputParameters": [
+                            "artifact:*.cef.destinationAddress"
+                        ],
+                        "outputVariables": [
+                            "high_risk",
+                            "risk_score",
+                            "risk_summary",
+                            "ioc_used",
+                            "ioc_type"
+                        ],
+                        "type": "code",
+                        "userCode": "\n    destination_values = container_artifact_cef_item_0 if isinstance(container_artifact_cef_item_0, list) else [container_artifact_cef_item_0]\n\n    ioc_value = \"\"\n    for value in destination_values:\n        if value in (None, \"\"):\n            continue\n        ioc_value = str(value).strip()\n        if ioc_value:\n            break\n\n    safe_default_outputs__high_risk = False\n    safe_default_outputs__risk_score = 0\n    safe_default_outputs__ioc_used = ioc_value\n    safe_default_outputs__ioc_type = \"ip\"\n\n    if ioc_value:\n        safe_default_outputs__risk_summary = \"Destination IP present but enrichment was not run. Returning safe default score.\"\n    else:\n        safe_default_outputs__risk_summary = \"No destination IP present. Returning safe default score.\"\n"
+                    },
+                    "errors": {},
+                    "id": "7",
+                    "type": "code",
+                    "userCode": "\n    destination_values = container_artifact_cef_item_0 if isinstance(container_artifact_cef_item_0, list) else [container_artifact_cef_item_0]\n\n    ioc_value = \"\"\n    for value in destination_values:\n        if value in (None, \"\"):\n            continue\n        ioc_value = str(value).strip()\n        if ioc_value:\n            break\n\n    safe_default_outputs__high_risk = False\n    safe_default_outputs__risk_score = 0\n    safe_default_outputs__ioc_used = ioc_value\n    safe_default_outputs__ioc_type = \"ip\"\n\n    if ioc_value:\n        safe_default_outputs__risk_summary = \"Destination IP present but enrichment was not run. Returning safe default score.\"\n    else:\n        safe_default_outputs__risk_summary = \"No destination IP present. Returning safe default score.\"\n",
+                    "warnings": {},
+                    "x": 1240,
+                    "y": 676
+                }
+            },
+            "notes": ""
+        },
+        "input_spec": null,
+        "output_spec": null,
+        "playbook_trigger": "artifact_created",
+        "playbook_type": "automation",
+        "python_version": "3.13",
+        "schema": "5.0.24",
+        "version": "8.7.0.243"
+    },
+    "create_time": "2026-09-28T01:07:01.835355+00:00",
+    "draft_mode": false,
+    "labels": [
+        "*"
+    ],
+    "tags": []
+}
